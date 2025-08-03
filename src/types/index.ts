@@ -67,6 +67,73 @@ export interface UserProfile {
   totalSaved: number;
   goals: FinancialGoal[];
   preferences: UserPreferences;
+  conversationHistory: ConversationEntry[];
+  learningProgress: LearningProgress;
+  teamId?: string;
+  role?: 'member' | 'leader';
+  createdAt: Date;
+  lastActive: Date;
+}
+
+export interface ConversationEntry {
+  id: string;
+  timestamp: Date;
+  userMessage: string;
+  aiResponse: string;
+  context: {
+    financialData: Partial<FinancialData>;
+    userMood?: 'frustrated' | 'excited' | 'confused' | 'neutral';
+    topicCategory: 'budgeting' | 'investing' | 'debt' | 'goals' | 'general';
+  };
+}
+
+export interface LearningProgress {
+  completedModules: string[];
+  currentStreak: number;
+  totalQuizzesTaken: number;
+  averageScore: number;
+  certificates: Certificate[];
+  weakAreas: string[];
+  strongAreas: string[];
+}
+
+export interface Certificate {
+  id: string;
+  name: string;
+  category: string;
+  earnedAt: Date;
+  score: number;
+  validUntil?: Date;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description: string;
+  members: TeamMember[];
+  sharedGoals: FinancialGoal[];
+  createdAt: Date;
+  inviteCode: string;
+}
+
+export interface TeamMember {
+  userId: string;
+  name: string;
+  role: 'member' | 'leader';
+  joinedAt: Date;
+  contribution: number;
+}
+
+export interface ShareableReport {
+  id: string;
+  userId: string;
+  type: 'progress' | 'achievement' | 'goal';
+  title: string;
+  description: string;
+  imageUrl?: string;
+  data: any;
+  createdAt: Date;
+  isPublic: boolean;
 }
 
 export interface PersonaType {
@@ -105,6 +172,18 @@ export interface UserPreferences {
   theme: 'light' | 'dark';
   riskTolerance: 'conservative' | 'moderate' | 'aggressive';
   coachingStyle: 'gentle' | 'motivational' | 'direct';
+  language: string;
+  accessibility: {
+    highContrast: boolean;
+    reducedMotion: boolean;
+    screenReader: boolean;
+    fontSize: 'small' | 'medium' | 'large';
+  };
+  privacy: {
+    shareProgress: boolean;
+    allowTeamInvites: boolean;
+    dataRetention: number; // days
+  };
 }
 
 export interface Challenge {

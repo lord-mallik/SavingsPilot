@@ -1,25 +1,37 @@
 import React, { useState } from 'react';
-import { PiggyBank, TrendingUp, Calculator, Brain, User, Zap, Users, Shield, BookOpen, Share2 } from 'lucide-react';
-import { Toaster } from 'react-hot-toast';
-import { ExpenseInput } from './components/ExpenseInput';
-import { ExpenseChart } from './components/ExpenseChart';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { AuthScreen } from './components/AuthScreen';
+import { ThemeToggle } from './components/ThemeToggle';
+import { LanguageSelector } from './components/LanguageSelector';
+import { EnhancedExpenseInput } from './components/EnhancedExpenseInput';
+import { EnhancedExpenseChart } from './components/EnhancedExpenseChart';
+import { EnhancedGamification } from './components/EnhancedGamification';
+import { PiggyBank, TrendingUp, Calculator, Brain, User, Zap, Users, Share2, Shield } from 'lucide-react';
 import { SavingsSimulator } from './components/SavingsSimulator';
-import { AICoachAdvanced } from './components/AICoachAdvanced';
+import { EnhancedAICoach } from './components/EnhancedAICoach';
 import { PersonaSelector } from './components/PersonaSelector';
 import { UserProfile } from './components/UserProfile';
-import { Gamification } from './components/Gamification';
-import { InteractiveLearning } from './components/InteractiveLearning';
-import { SocialFeatures } from './components/SocialFeatures';
-import { TeamSavingMode } from './components/TeamSavingMode';
-import { PrivacyCenter } from './components/PrivacyCenter';
-import { FinancialGlossary } from './components/FinancialGlossary';
+import { TeamCollaboration } from './components/TeamCollaboration';
+import { ShareableReports } from './components/ShareableReports';
+import { AccessibilityControls } from './components/AccessibilityControls';
+import { PrivacyControls } from './components/PrivacyControls';
 import { Expense, FinancialData, SavingsScenario, UserProfile as UserProfileType, PersonaType } from './types';
 import { getDefaultPersona } from './data/personas';
-import { LEARNING_MODULES } from './data/learningModules';
-import { databaseService } from './services/database';
+import { useLanguage } from './contexts/LanguageContext';
+import { useTheme } from './contexts/ThemeContext';
 import { v4 as uuidv4 } from 'uuid';
 
-function App() {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const AppContent: React.FC = () => {
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const [user, setUser] = useState<User | null>(null);
   const [showPersonaSelector, setShowPersonaSelector] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfileType>({
     id: uuidv4(),
@@ -36,8 +48,32 @@ function App() {
       notifications: true,
       theme: 'light',
       riskTolerance: 'moderate',
-      coachingStyle: 'motivational'
-    }
+      coachingStyle: 'motivational',
+      language: 'en',
+      accessibility: {
+        highContrast: false,
+        reducedMotion: false,
+        screenReader: false,
+        fontSize: 'medium'
+      },
+      privacy: {
+        shareProgress: true,
+        allowTeamInvites: true,
+        dataRetention: 365
+      }
+    },
+    conversationHistory: [],
+    learningProgress: {
+      completedModules: [],
+      currentStreak: 0,
+      totalQuizzesTaken: 0,
+      averageScore: 0,
+      certificates: [],
+      weakAreas: [],
+      strongAreas: []
+    },
+    createdAt: new Date(),
+    lastActive: new Date()
   });
   
   const [financialData, setFinancialData] = useState<FinancialData>({
@@ -56,7 +92,25 @@ function App() {
     luxuryReduction: 0,
   });
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'simulator' | 'coach' | 'gamification' | 'learning' | 'social' | 'team' | 'privacy' | 'glossary'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'simulator' | 'coach' | 'gamification' | 'team' | 'share' | 'accessibility' | 'privacy'>('profile');
+
+  const handleLogin = (userData: User) => {
+    setUser(userData);
+    setUserProfile(prev => ({
+      ...prev,
+      id: userData.id,
+      name: userData.name
+    }));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setShowPersonaSelector(true);
+  };
+
+  if (!user) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
 
   const handlePersonaSelect = (persona: PersonaType) => {
     setUserProfile(prev => ({ ...prev, persona }));
@@ -90,63 +144,17 @@ function App() {
   const handleCurrentSavingsChange = (currentSavings: number) => {
     setFinancialData(prev => ({ ...prev, currentSavings }));
   };
-
-  const handleDataReset = () => {
-    setUserProfile({
-      id: uuidv4(),
-      name: 'Financial Explorer',
-      persona: getDefaultPersona(),
-      level: 1,
-      experience: 0,
-      badges: [],
-      streakDays: 0,
-      totalSaved: 0,
-      goals: [],
-      preferences: {
-        currency: 'USD',
-        notifications: true,
-        theme: 'light',
-        riskTolerance: 'moderate',
-        coachingStyle: 'motivational'
-      }
-    });
-    setFinancialData({
-      monthlyIncome: 0,
-      expenses: [],
-      emergencyFund: 0,
-      currentSavings: 0,
-    });
-    setSavingsScenario({
-      diningReduction: 0,
-      entertainmentReduction: 0,
-      shoppingReduction: 0,
-      subscriptionReduction: 0,
-      transportationReduction: 0,
-      luxuryReduction: 0,
-    });
-    setActiveTab('profile');
-  };
-
-  const handleModuleComplete = (moduleId: string, score: number) => {
-    // Award XP and potentially badges for completing learning modules
-    const xpGained = Math.floor(score * 0.5); // 50 XP for perfect score
-    handleUpdateProfile({
-      experience: userProfile.experience + xpGained
-    });
-  };
-
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'input', label: 'Financial Data', icon: Calculator },
-    { id: 'analysis', label: 'Analysis', icon: TrendingUp },
-    { id: 'simulator', label: 'Simulator', icon: PiggyBank },
-    { id: 'coach', label: 'AI Coach', icon: Brain },
-    { id: 'gamification', label: 'Challenges', icon: Zap },
-    { id: 'learning', label: 'Learning', icon: BookOpen },
-    { id: 'social', label: 'Social', icon: Share2 },
-    { id: 'team', label: 'Team Mode', icon: Users },
-    { id: 'privacy', label: 'Privacy', icon: Shield },
-    { id: 'glossary', label: 'Glossary', icon: BookOpen },
+    { id: 'profile', label: t('nav.profile'), icon: User },
+    { id: 'input', label: t('nav.input'), icon: Calculator },
+    { id: 'analysis', label: t('nav.analysis'), icon: TrendingUp },
+    { id: 'simulator', label: t('nav.simulator'), icon: PiggyBank },
+    { id: 'coach', label: t('nav.coach'), icon: Brain },
+    { id: 'gamification', label: t('nav.challenges'), icon: Zap },
+    { id: 'team', label: t('nav.team'), icon: Users },
+    { id: 'share', label: t('nav.share'), icon: Share2 },
+    { id: 'accessibility', label: t('nav.accessibility'), icon: Shield },
+    { id: 'privacy', label: t('nav.privacy'), icon: Shield },
   ];
 
   if (showPersonaSelector) {
@@ -163,31 +171,71 @@ function App() {
     );
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      theme === 'dark' 
+        ? 'bg-gradient-to-br from-gray-900 to-blue-900' 
+        : 'bg-gradient-to-br from-blue-50 to-green-50'
+    }`}>
       {/* Header */}
-      <header className="bg-white shadow-lg">
+      <header className={`shadow-lg transition-colors duration-300 ${
+        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
             <PiggyBank className="w-10 h-10 text-blue-600" />
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Savings Simulator AI - Pro Edition</h1>
-              <p className="text-gray-600">Your Intelligent Financial Coaching Platform</p>
+              <h1 className={`text-3xl font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {t('app.title')}
+              </h1>
+              <p className={`${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                {t('app.subtitle')}
+              </p>
             </div>
             <div className="ml-auto flex items-center gap-3">
+              <LanguageSelector />
+              <ThemeToggle />
               <div className="text-right">
-                <p className="text-sm text-gray-600">Welcome back,</p>
-                <p className="font-semibold text-gray-800">{userProfile.name}</p>
+                <p className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  {t('profile.welcome')}
+                </p>
+                <p className={`font-semibold ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-800'
+                }`}>
+                  {userProfile.name}
+                </p>
               </div>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold">
                 {userProfile.name.charAt(0).toUpperCase()}
               </div>
+              <button
+                onClick={handleLogout}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'border-blue-500 text-blue-600' + (theme === 'dark' ? ' bg-blue-900/20' : ' bg-blue-50')
+                    : 'border-transparent' + (theme === 'dark' 
+                        ? ' text-gray-400 hover:text-gray-300 hover:border-gray-600' 
+                        : ' text-gray-500 hover:text-gray-700 hover:border-gray-300')
+                }`}
+              >
+                {t('auth.logout')}
+              </button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <nav className={`border-b sticky top-0 z-10 transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => {
@@ -222,7 +270,7 @@ function App() {
 
         {activeTab === 'input' && (
           <div className="space-y-6">
-            <ExpenseInput
+            <EnhancedExpenseInput
               expenses={financialData.expenses}
               onExpensesChange={handleExpensesChange}
               monthlyIncome={financialData.monthlyIncome}
@@ -230,30 +278,48 @@ function App() {
             />
             
             {/* Additional Financial Data */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Additional Financial Information</h2>
+            <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
+              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-2xl font-bold mb-6 ${
+                theme === 'dark' ? 'text-white' : 'text-gray-800'
+              }`}>
+                Additional Financial Information
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                     Emergency Fund
                   </label>
                   <input
                     type="number"
                     value={financialData.emergencyFund || ''}
                     onChange={(e) => handleEmergencyFundChange(parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
+                        : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
                     placeholder="Current emergency fund amount"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                     Current Savings
                   </label>
                   <input
                     type="number"
                     value={financialData.currentSavings || ''}
                     onChange={(e) => handleCurrentSavingsChange(parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
+                        : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
                     placeholder="Total current savings"
                   />
                 </div>
@@ -263,7 +329,7 @@ function App() {
         )}
 
         {activeTab === 'analysis' && (
-          <ExpenseChart expenses={financialData.expenses} />
+          <EnhancedExpenseChart expenses={financialData.expenses} />
         )}
 
         {activeTab === 'simulator' && (
@@ -274,96 +340,77 @@ function App() {
         )}
 
         {activeTab === 'coach' && (
-          <AICoachAdvanced
-            userProfile={userProfile}
+          <EnhancedAICoach
             financialData={financialData}
-            savingsScenario={savingsScenario}
+            userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
           />
         )}
 
         {activeTab === 'gamification' && (
-          <Gamification
+          <EnhancedGamification
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
-          />
-        )}
-
-        {activeTab === 'learning' && (
-          <InteractiveLearning
-            modules={LEARNING_MODULES}
-            userProfile={userProfile}
-            onUpdateProfile={handleUpdateProfile}
-            onModuleComplete={handleModuleComplete}
-          />
-        )}
-
-        {activeTab === 'social' && (
-          <SocialFeatures
-            userProfile={userProfile}
-            financialData={financialData}
-            achievements={userProfile.badges}
-            progressData={{}}
           />
         )}
 
         {activeTab === 'team' && (
-          <TeamSavingMode
+          <TeamCollaboration
+            userProfile={userProfile}
+            onUpdateProfile={handleUpdateProfile}
+          />
+        )}
+
+        {activeTab === 'share' && (
+          <ShareableReports
+            userProfile={userProfile}
+            financialData={financialData}
+          />
+        )}
+
+        {activeTab === 'accessibility' && (
+          <AccessibilityControls
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
           />
         )}
 
         {activeTab === 'privacy' && (
-          <PrivacyCenter
+          <PrivacyControls
             userProfile={userProfile}
-            onDataReset={handleDataReset}
+            onUpdateProfile={handleUpdateProfile}
           />
-        )}
-
-        {activeTab === 'glossary' && (
-          <FinancialGlossary />
         )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-16">
+      <footer className={`border-t mt-16 transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-gray-600">
-            <p>&copy; 2025 Savings Simulator AI - Pro Edition. Built with React, TypeScript, and Chart.js.</p>
+          <div className={`text-center ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            <p>&copy; 2025 {t('app.title')}. Built with React, TypeScript, Chart.js, and Google Gemini AI.</p>
             <p className="mt-2 text-sm">
-              Empowering your financial journey through AI-powered coaching, gamification, and personalized insights.
+              Award-winning financial coaching platform with AI intelligence, gamification, and collaborative features.
             </p>
           </div>
         </div>
       </footer>
-
-      {/* Toast Notifications */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10B981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            duration: 5000,
-            iconTheme: {
-              primary: '#EF4444',
-              secondary: '#fff',
-            },
-          },
-        }}
-      />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
