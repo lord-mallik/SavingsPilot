@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { PiggyBank, TrendingUp, Calculator, Brain, User, Zap } from 'lucide-react';
+import { PiggyBank, TrendingUp, Calculator, Brain, User, Zap, Users, Shield, BookOpen, Share2 } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 import { ExpenseInput } from './components/ExpenseInput';
 import { ExpenseChart } from './components/ExpenseChart';
 import { SavingsSimulator } from './components/SavingsSimulator';
-import { AICoach } from './components/AICoach';
+import { AICoachAdvanced } from './components/AICoachAdvanced';
 import { PersonaSelector } from './components/PersonaSelector';
 import { UserProfile } from './components/UserProfile';
 import { Gamification } from './components/Gamification';
+import { InteractiveLearning } from './components/InteractiveLearning';
+import { SocialFeatures } from './components/SocialFeatures';
+import { TeamSavingMode } from './components/TeamSavingMode';
+import { PrivacyCenter } from './components/PrivacyCenter';
+import { FinancialGlossary } from './components/FinancialGlossary';
 import { Expense, FinancialData, SavingsScenario, UserProfile as UserProfileType, PersonaType } from './types';
 import { getDefaultPersona } from './data/personas';
+import { LEARNING_MODULES } from './data/learningModules';
+import { databaseService } from './services/database';
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
@@ -48,7 +56,7 @@ function App() {
     luxuryReduction: 0,
   });
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'simulator' | 'coach' | 'gamification'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'simulator' | 'coach' | 'gamification' | 'learning' | 'social' | 'team' | 'privacy' | 'glossary'>('profile');
 
   const handlePersonaSelect = (persona: PersonaType) => {
     setUserProfile(prev => ({ ...prev, persona }));
@@ -82,6 +90,51 @@ function App() {
   const handleCurrentSavingsChange = (currentSavings: number) => {
     setFinancialData(prev => ({ ...prev, currentSavings }));
   };
+
+  const handleDataReset = () => {
+    setUserProfile({
+      id: uuidv4(),
+      name: 'Financial Explorer',
+      persona: getDefaultPersona(),
+      level: 1,
+      experience: 0,
+      badges: [],
+      streakDays: 0,
+      totalSaved: 0,
+      goals: [],
+      preferences: {
+        currency: 'USD',
+        notifications: true,
+        theme: 'light',
+        riskTolerance: 'moderate',
+        coachingStyle: 'motivational'
+      }
+    });
+    setFinancialData({
+      monthlyIncome: 0,
+      expenses: [],
+      emergencyFund: 0,
+      currentSavings: 0,
+    });
+    setSavingsScenario({
+      diningReduction: 0,
+      entertainmentReduction: 0,
+      shoppingReduction: 0,
+      subscriptionReduction: 0,
+      transportationReduction: 0,
+      luxuryReduction: 0,
+    });
+    setActiveTab('profile');
+  };
+
+  const handleModuleComplete = (moduleId: string, score: number) => {
+    // Award XP and potentially badges for completing learning modules
+    const xpGained = Math.floor(score * 0.5); // 50 XP for perfect score
+    handleUpdateProfile({
+      experience: userProfile.experience + xpGained
+    });
+  };
+
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'input', label: 'Financial Data', icon: Calculator },
@@ -89,6 +142,11 @@ function App() {
     { id: 'simulator', label: 'Simulator', icon: PiggyBank },
     { id: 'coach', label: 'AI Coach', icon: Brain },
     { id: 'gamification', label: 'Challenges', icon: Zap },
+    { id: 'learning', label: 'Learning', icon: BookOpen },
+    { id: 'social', label: 'Social', icon: Share2 },
+    { id: 'team', label: 'Team Mode', icon: Users },
+    { id: 'privacy', label: 'Privacy', icon: Shield },
+    { id: 'glossary', label: 'Glossary', icon: BookOpen },
   ];
 
   if (showPersonaSelector) {
@@ -216,9 +274,11 @@ function App() {
         )}
 
         {activeTab === 'coach' && (
-          <AICoach
+          <AICoachAdvanced
+            userProfile={userProfile}
             financialData={financialData}
             savingsScenario={savingsScenario}
+            onUpdateProfile={handleUpdateProfile}
           />
         )}
 
@@ -227,6 +287,42 @@ function App() {
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
           />
+        )}
+
+        {activeTab === 'learning' && (
+          <InteractiveLearning
+            modules={LEARNING_MODULES}
+            userProfile={userProfile}
+            onUpdateProfile={handleUpdateProfile}
+            onModuleComplete={handleModuleComplete}
+          />
+        )}
+
+        {activeTab === 'social' && (
+          <SocialFeatures
+            userProfile={userProfile}
+            financialData={financialData}
+            achievements={userProfile.badges}
+            progressData={{}}
+          />
+        )}
+
+        {activeTab === 'team' && (
+          <TeamSavingMode
+            userProfile={userProfile}
+            onUpdateProfile={handleUpdateProfile}
+          />
+        )}
+
+        {activeTab === 'privacy' && (
+          <PrivacyCenter
+            userProfile={userProfile}
+            onDataReset={handleDataReset}
+          />
+        )}
+
+        {activeTab === 'glossary' && (
+          <FinancialGlossary />
         )}
       </main>
 
@@ -241,6 +337,32 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10B981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 5000,
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   );
 }

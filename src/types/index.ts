@@ -145,3 +145,40 @@ export interface ScenarioOption {
   outcome: string;
   isCorrect: boolean;
 }
+
+export interface TeamGoal extends FinancialGoal {
+  teamId: string;
+  createdBy: string;
+  contributors: { userId: string; amount: number }[];
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  avatar: string;
+  role: 'leader' | 'member';
+  contribution: number;
+  joinedAt: Date;
+  isOnline: boolean;
+}
+
+export interface AIConversationMessage {
+  id: string;
+  type: 'user' | 'ai';
+  content: string;
+  timestamp: Date;
+  tone?: string;
+  suggestions?: string[];
+  followUpQuestions?: string[];
+}
+
+export interface ProgressReport {
+  userId: string;
+  generatedAt: Date;
+  level: number;
+  totalSaved: number;
+  badgesEarned: number;
+  streakDays: number;
+  recentAchievements: Badge[];
+  financialHealthScore: number;
+}
