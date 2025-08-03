@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthScreen } from './components/AuthScreen';
 import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -467,7 +468,9 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

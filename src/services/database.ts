@@ -40,15 +40,16 @@ export class DatabaseService {
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No profile found, return null to create new one
-          return null;
-        }
         console.error('Error fetching user profile:', error);
         throw error;
+      }
+
+      if (!data) {
+        // No profile found, return null to create new one
+        return null;
       }
 
       return this.mapToUserProfile(data);
@@ -92,20 +93,21 @@ export class DatabaseService {
         .from('financial_data')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No financial data found, return default
-          return {
-            monthlyIncome: 0,
-            expenses: [],
-            emergencyFund: 0,
-            currentSavings: 0
-          };
-        }
         console.error('Error fetching financial data:', error);
         throw error;
+      }
+
+      if (!data) {
+        // No financial data found, return default
+        return {
+          monthlyIncome: 0,
+          expenses: [],
+          emergencyFund: 0,
+          currentSavings: 0
+        };
       }
 
       return {
