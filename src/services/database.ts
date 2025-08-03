@@ -1,5 +1,6 @@
-import { supabase } from '../config/supabase';
-import { UserProfile, FinancialData, Badge, LearningModule } from '../types';
+import { supabase, Database } from '../config/supabase';
+import { UserProfile, FinancialData, Badge, Challenge } from '../types';
+import toast from 'react-hot-toast';
 
 export class DatabaseService {
   // User Profile Management
@@ -8,22 +9,27 @@ export class DatabaseService {
       const { data, error } = await supabase
         .from('user_profiles')
         .upsert({
-          user_id: profile.id,
-          name: profile.name,
-          persona_id: profile.persona?.id,
-          level: profile.level,
-          experience: profile.experience,
-          streak_days: profile.streakDays,
-          total_saved: profile.totalSaved,
-          preferences: profile.preferences
+          user_id: profile.id!,
+          name: profile.name!,
+          persona_id: profile.persona?.id || 'student',
+          level: profile.level || 1,
+          experience: profile.experience || 0,
+          streak_days: profile.streakDays || 0,
+          total_saved: profile.totalSaved || 0,
+          preferences: profile.preferences || {}
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving user profile:', error);
+        toast.error('Failed to save profile. Please try again.');
+        throw error;
+      }
+
       return this.mapToUserProfile(data);
     } catch (error) {
-      console.error('Error saving user profile:', error);
+      console.error('Database error:', error);
       return null;
     }
   }
@@ -36,10 +42,18 @@ export class DatabaseService {
         .eq('user_id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No profile found, return null to create new one
+          return null;
+        }
+        console.error('Error fetching user profile:', error);
+        throw error;
+      }
+
       return this.mapToUserProfile(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Database error:', error);
       return null;
     }
   }
@@ -54,13 +68,20 @@ export class DatabaseService {
           monthly_income: financialData.monthlyIncome,
           expenses: financialData.expenses,
           emergency_fund: financialData.emergencyFund,
-          current_savings: financialData.currentSavings
+          current_savings: financialData.currentSavings,
+          currency: 'INR'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving financial data:', error);
+        toast.error('Failed to save financial data. Please try again.');
+        throw error;
+      }
+
+      toast.success('Financial data saved successfully!');
       return true;
     } catch (error) {
-      console.error('Error saving financial data:', error);
+      console.error('Database error:', error);
       return false;
     }
   }
@@ -73,7 +94,20 @@ export class DatabaseService {
         .eq('user_id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No financial data found, return default
+          return {
+            monthlyIncome: 0,
+            expenses: [],
+            emergencyFund: 0,
+            currentSavings: 0
+          };
+        }
+        console.error('Error fetching financial data:', error);
+        throw error;
+      }
+
       return {
         monthlyIncome: data.monthly_income,
         expenses: data.expenses,
@@ -81,7 +115,7 @@ export class DatabaseService {
         currentSavings: data.current_savings
       };
     } catch (error) {
-      console.error('Error fetching financial data:', error);
+      console.error('Database error:', error);
       return null;
     }
   }
@@ -94,13 +128,19 @@ export class DatabaseService {
         .insert({
           user_id: userId,
           badge_id: badge.id,
-          unlocked_at: badge.unlockedAt.toISOString()
+          unlocked_at: badge.unlockedAt.toISOString(),
+          category: badge.category
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error unlocking badge:', error);
+        return false;
+      }
+
+      toast.success(`Badge unlocked: ${badge.name}!`);
       return true;
     } catch (error) {
-      console.error('Error unlocking badge:', error);
+      console.error('Database error:', error);
       return false;
     }
   }
@@ -110,18 +150,29 @@ export class DatabaseService {
       const { data, error } = await supabase
         .from('user_badges')
         .select('*')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .order('unlocked_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching user badges:', error);
+        return [];
+      }
+
       return data.map(this.mapToBadge);
     } catch (error) {
-      console.error('Error fetching user badges:', error);
+      console.error('Database error:', error);
       return [];
     }
   }
 
   // Learning Progress Management
-  async saveLearningProgress(userId: string, moduleId: string, completed: boolean, score: number): Promise<boolean> {
+  async saveLearningProgress(
+    userId: string, 
+    moduleId: string, 
+    completed: boolean, 
+    score: number,
+    timeSpent: number = 0
+  ): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('learning_progress')
@@ -130,13 +181,21 @@ export class DatabaseService {
           module_id: moduleId,
           completed,
           score,
-          completed_at: new Date().toISOString()
+          completed_at: new Date().toISOString(),
+          time_spent: timeSpent
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving learning progress:', error);
+        return false;
+      }
+
+      if (completed) {
+        toast.success(`Module completed with ${score}% score!`);
+      }
       return true;
     } catch (error) {
-      console.error('Error saving learning progress:', error);
+      console.error('Database error:', error);
       return false;
     }
   }
@@ -146,12 +205,64 @@ export class DatabaseService {
       const { data, error } = await supabase
         .from('learning_progress')
         .select('*')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching learning progress:', error);
+        return [];
+      }
+
       return data;
     } catch (error) {
-      console.error('Error fetching learning progress:', error);
+      console.error('Database error:', error);
+      return [];
+    }
+  }
+
+  // Challenge Management
+  async saveChallenge(userId: string, challenge: Challenge): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('challenges')
+        .upsert({
+          user_id: userId,
+          challenge_id: challenge.id,
+          is_active: challenge.isActive,
+          progress: challenge.progress,
+          started_at: new Date().toISOString(),
+          completed_at: challenge.progress >= challenge.target ? new Date().toISOString() : null,
+          target: challenge.target
+        });
+
+      if (error) {
+        console.error('Error saving challenge:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Database error:', error);
+      return false;
+    }
+  }
+
+  async getUserChallenges(userId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('challenges')
+        .select('*')
+        .eq('user_id', userId)
+        .order('started_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching user challenges:', error);
+        return [];
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Database error:', error);
       return [];
     }
   }
@@ -166,10 +277,14 @@ export class DatabaseService {
           conversation_data: conversationData
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving conversation:', error);
+        return false;
+      }
+
       return true;
     } catch (error) {
-      console.error('Error saving conversation:', error);
+      console.error('Database error:', error);
       return false;
     }
   }
@@ -177,11 +292,12 @@ export class DatabaseService {
   // Data Export
   async exportUserData(userId: string): Promise<any> {
     try {
-      const [profile, financialData, badges, learningProgress, conversations] = await Promise.all([
+      const [profile, financialData, badges, learningProgress, challenges, conversations] = await Promise.all([
         this.getUserProfile(userId),
         this.getFinancialData(userId),
         this.getUserBadges(userId),
         this.getLearningProgress(userId),
+        this.getUserChallenges(userId),
         supabase.from('ai_conversations').select('*').eq('user_id', userId)
       ]);
 
@@ -190,10 +306,14 @@ export class DatabaseService {
         financialData,
         badges,
         learningProgress,
-        conversations: conversations.data
+        challenges,
+        conversations: conversations.data,
+        exportedAt: new Date().toISOString(),
+        version: '1.0.0'
       };
     } catch (error) {
       console.error('Error exporting user data:', error);
+      toast.error('Failed to export data. Please try again.');
       return null;
     }
   }
@@ -201,35 +321,78 @@ export class DatabaseService {
   // Data Deletion
   async deleteUserData(userId: string): Promise<boolean> {
     try {
-      await Promise.all([
-        supabase.from('user_profiles').delete().eq('user_id', userId),
-        supabase.from('financial_data').delete().eq('user_id', userId),
-        supabase.from('user_badges').delete().eq('user_id', userId),
-        supabase.from('learning_progress').delete().eq('user_id', userId),
-        supabase.from('ai_conversations').delete().eq('user_id', userId)
-      ]);
+      const { error } = await supabase.rpc('delete_user_data', {
+        target_user_id: userId
+      });
 
+      if (error) {
+        console.error('Error deleting user data:', error);
+        toast.error('Failed to delete data. Please try again.');
+        return false;
+      }
+
+      toast.success('All data deleted successfully.');
       return true;
     } catch (error) {
-      console.error('Error deleting user data:', error);
+      console.error('Database error:', error);
       return false;
     }
   }
 
   // Helper methods
   private mapToUserProfile(data: any): UserProfile {
-    // Implementation would map database fields to UserProfile interface
-    return data as UserProfile;
+    return {
+      id: data.user_id,
+      name: data.name,
+      persona: { id: data.persona_id, name: 'Student', description: '', icon: '🎓', defaultIncome: 0, defaultExpenses: [], savingsTarget: 0, riskTolerance: 'low' },
+      level: data.level,
+      experience: data.experience,
+      badges: [],
+      streakDays: data.streak_days,
+      totalSaved: data.total_saved,
+      goals: [],
+      preferences: data.preferences || {
+        currency: 'INR',
+        notifications: true,
+        theme: 'light',
+        riskTolerance: 'moderate',
+        coachingStyle: 'motivational',
+        language: 'en',
+        accessibility: {
+          highContrast: false,
+          reducedMotion: false,
+          screenReader: false,
+          fontSize: 'medium'
+        },
+        privacy: {
+          shareProgress: true,
+          allowTeamInvites: true,
+          dataRetention: 365
+        }
+      },
+      conversationHistory: [],
+      learningProgress: {
+        completedModules: [],
+        currentStreak: 0,
+        totalQuizzesTaken: 0,
+        averageScore: 0,
+        certificates: [],
+        weakAreas: [],
+        strongAreas: []
+      },
+      createdAt: new Date(data.created_at),
+      lastActive: new Date(data.updated_at)
+    };
   }
 
   private mapToBadge(data: any): Badge {
     return {
       id: data.badge_id,
-      name: '', // Would need to join with badges table
-      description: '',
-      icon: '',
+      name: 'Achievement Badge',
+      description: 'Badge earned through progress',
+      icon: '🏆',
       unlockedAt: new Date(data.unlocked_at),
-      category: 'milestone'
+      category: data.category
     };
   }
 }

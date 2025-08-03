@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { PiggyBank, Eye, EyeOff, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { ForgotPasswordModal } from './ForgotPasswordModal';
+import { signInWithEmail, signUpWithEmail } from '../config/supabase';
+import toast from 'react-hot-toast';
 
 interface AuthScreenProps {
   onLogin: (user: { id: string; name: string; email: string }) => void;
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,17 +55,64 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
     
     setIsLoading(true);
     
-    // Simulate API call
+    try {
+      if (isLogin) {
+        const { user } = await signInWithEmail(formData.email, formData.password);
+        if (user) {
+          onLogin({
+            id: user.id,
+            name: user.user_metadata?.name || formData.email.split('@')[0],
+            email: user.email!
+          });
+          toast.success('Welcome back!');
+        }
+      } else {
+        const { user } = await signUpWithEmail(formData.email, formData.password, formData.name);
+        if (user) {
+          onLogin({
+            id: user.id,
+            name: formData.name,
+            email: user.email!
+          });
+          toast.success('Account created successfully!');
+        }
+      }
+    } catch (error: any) {
+      console.error('Authentication error:', error);
+      
+      // Handle specific Supabase auth errors
+      if (error.message?.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password. Please try again.');
+      } else if (error.message?.includes('User already registered')) {
+        toast.error('An account with this email already exists.');
+      } else if (error.message?.includes('Password should be at least')) {
+        toast.error('Password must be at least 6 characters long.');
+      } else {
+        toast.error('Authentication failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setFormData({
+      email: 'demo@savingspilot.com',
+      password: 'demo123',
+      name: 'Demo User'
+    });
+    
+    // Auto-submit after setting demo credentials
     setTimeout(() => {
       const user = {
-        id: 'user-' + Date.now(),
-        name: formData.name || formData.email.split('@')[0],
-        email: formData.email
+        id: 'demo-user-' + Date.now(),
+        name: 'Demo User',
+        email: 'demo@savingspilot.com'
       };
       
       onLogin(user);
-      setIsLoading(false);
-    }, 1500);
+      toast.success('Welcome to SavingsPilot Demo!');
+    }, 500);
   };
 
   const getAvatarInitials = (name: string) => {
@@ -200,6 +251,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           {isLogin && (
             <div className="text-right">
               <button
+                onClick={() => setShowForgotPassword(true)}
                 type="button"
                 className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
               >
@@ -249,18 +301,32 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
         <div className={`mt-6 p-4 rounded-lg ${
           theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
         }`}>
+          <div className="flex items-center justify-between mb-2">
+            <p className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Try the demo:
+            </p>
+            <button
+              onClick={handleDemoLogin}
+              className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              Use Demo Account
+            </button>
+          </div>
           <p className={`text-xs ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          } mb-2`}>
-            Demo credentials:
-          </p>
-          <p className={`text-xs ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
-            Email: demo@example.com<br />
+            Email: demo@savingspilot.com<br />
             Password: demo123
           </p>
         </div>
+
+        {/* Forgot Password Modal */}
+        <ForgotPasswordModal
+          isOpen={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+        />
       </motion.div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Expense, SavingsScenario, CompoundInterestProjection } from '../types';
+import { formatINR } from './currency';
 
 export const calculateLevel = (experience: number): number => {
   // Level progression: 100 XP for level 1, 200 for level 2, etc.
@@ -157,14 +158,8 @@ export const calculateFinancialHealthScore = (
   };
 };
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
+// Use INR formatting from currency utils
+export const formatCurrency = formatINR;
 
 export const formatPercentage = (value: number): string => {
   return `${value.toFixed(1)}%`;

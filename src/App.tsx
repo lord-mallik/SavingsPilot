@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthScreen } from './components/AuthScreen';
 import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageSelector } from './components/LanguageSelector';
 import { EnhancedExpenseInput } from './components/EnhancedExpenseInput';
 import { EnhancedExpenseChart } from './components/EnhancedExpenseChart';
 import { EnhancedGamification } from './components/EnhancedGamification';
+import { FinancialInsightsDashboard } from './components/FinancialInsightsDashboard';
+import { ExportReports } from './components/ExportReports';
+import { AccessibilityPanel } from './components/AccessibilityPanel';
 import { PiggyBank, TrendingUp, Calculator, Brain, User, Zap, Users, Share2, Shield } from 'lucide-react';
 import { SavingsSimulator } from './components/SavingsSimulator';
 import { EnhancedAICoach } from './components/EnhancedAICoach';
 import { PersonaSelector } from './components/PersonaSelector';
 import { UserProfile } from './components/UserProfile';
 import { TeamCollaboration } from './components/TeamCollaboration';
-import { ShareableReports } from './components/ShareableReports';
-import { AccessibilityControls } from './components/AccessibilityControls';
 import { PrivacyControls } from './components/PrivacyControls';
 import { Expense, FinancialData, SavingsScenario, UserProfile as UserProfileType, PersonaType } from './types';
 import { getDefaultPersona } from './data/personas';
-import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
+import { databaseService } from './services/database';
+import { formatINR } from './utils/currency';
 import { v4 as uuidv4 } from 'uuid';
 
 interface User {
@@ -29,7 +32,7 @@ interface User {
 }
 
 const AppContent: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [showPersonaSelector, setShowPersonaSelector] = useState(true);
@@ -44,12 +47,12 @@ const AppContent: React.FC = () => {
     totalSaved: 0,
     goals: [],
     preferences: {
-      currency: 'USD',
+      currency: 'INR',
       notifications: true,
       theme: 'light',
       riskTolerance: 'moderate',
       coachingStyle: 'motivational',
-      language: 'en',
+      language: 'hi',
       accessibility: {
         highContrast: false,
         reducedMotion: false,
@@ -92,7 +95,7 @@ const AppContent: React.FC = () => {
     luxuryReduction: 0,
   });
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'simulator' | 'coach' | 'gamification' | 'team' | 'share' | 'accessibility' | 'privacy'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'input' | 'analysis' | 'insights' | 'simulator' | 'coach' | 'gamification' | 'team' | 'share' | 'accessibility' | 'privacy'>('profile');
 
   const handleLogin = (userData: User) => {
     setUser(userData);
@@ -101,6 +104,28 @@ const AppContent: React.FC = () => {
       id: userData.id,
       name: userData.name
     }));
+    
+    // Load user data from database
+    loadUserData(userData.id);
+  };
+
+  const loadUserData = async (userId: string) => {
+    try {
+      const [profile, financial] = await Promise.all([
+        databaseService.getUserProfile(userId),
+        databaseService.getFinancialData(userId)
+      ]);
+      
+      if (profile) {
+        setUserProfile(profile);
+      }
+      
+      if (financial) {
+        setFinancialData(financial);
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -128,13 +153,27 @@ const AppContent: React.FC = () => {
 
   const handleUpdateProfile = (updates: Partial<UserProfileType>) => {
     setUserProfile(prev => ({ ...prev, ...updates }));
+    
+    // Save to database
+    databaseService.saveUserProfile({ ...userProfile, ...updates });
   };
+  
   const handleExpensesChange = (expenses: Expense[]) => {
     setFinancialData(prev => ({ ...prev, expenses }));
+    
+    // Save to database
+    if (user) {
+      databaseService.saveFinancialData(user.id, { ...financialData, expenses });
+    }
   };
 
   const handleIncomeChange = (monthlyIncome: number) => {
     setFinancialData(prev => ({ ...prev, monthlyIncome }));
+    
+    // Save to database
+    if (user) {
+      databaseService.saveFinancialData(user.id, { ...financialData, monthlyIncome });
+    }
   };
 
   const handleEmergencyFundChange = (emergencyFund: number) => {
@@ -148,6 +187,7 @@ const AppContent: React.FC = () => {
     { id: 'profile', label: t('nav.profile'), icon: User },
     { id: 'input', label: t('nav.input'), icon: Calculator },
     { id: 'analysis', label: t('nav.analysis'), icon: TrendingUp },
+    { id: 'insights', label: t('nav.insights'), icon: Brain },
     { id: 'simulator', label: t('nav.simulator'), icon: PiggyBank },
     { id: 'coach', label: t('nav.coach'), icon: Brain },
     { id: 'gamification', label: t('nav.challenges'), icon: Zap },
@@ -332,6 +372,13 @@ const AppContent: React.FC = () => {
           <EnhancedExpenseChart expenses={financialData.expenses} />
         )}
 
+        {activeTab === 'insights' && (
+          <FinancialInsightsDashboard
+            financialData={financialData}
+            userProfile={userProfile}
+          />
+        )}
+
         {activeTab === 'simulator' && (
           <SavingsSimulator
             expenses={financialData.expenses}
@@ -362,14 +409,14 @@ const AppContent: React.FC = () => {
         )}
 
         {activeTab === 'share' && (
-          <ShareableReports
+          <ExportReports
             userProfile={userProfile}
             financialData={financialData}
           />
         )}
 
         {activeTab === 'accessibility' && (
-          <AccessibilityControls
+          <AccessibilityPanel
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
           />
@@ -393,13 +440,26 @@ const AppContent: React.FC = () => {
           <div className={`text-center ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            <p>&copy; 2025 {t('app.title')}. Built with React, TypeScript, Chart.js, and Google Gemini AI.</p>
+            <p>&copy; 2025 SavingsPilot. Built with React, TypeScript, Supabase, and Google Gemini AI.</p>
             <p className="mt-2 text-sm">
-              Award-winning financial coaching platform with AI intelligence, gamification, and collaborative features.
+              Empowering financial literacy for Indian users with AI-powered insights and gamification.
             </p>
           </div>
         </div>
       </footer>
+      
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: theme === 'dark' ? '#374151' : '#FFFFFF',
+            color: theme === 'dark' ? '#F9FAFB' : '#111827',
+            border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
+          },
+        }}
+      />
     </div>
   );
 };
@@ -407,9 +467,7 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
+      <AppContent />
     </ThemeProvider>
   );
 }
