@@ -1,9 +1,6 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true
-});
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
 export interface ConversationContext {
   userId: string;
@@ -25,6 +22,7 @@ export interface AIResponse {
 
 export class AICoachService {
   private conversationHistory: Map<string, any[]> = new Map();
+  private model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
   async generatePersonalizedResponse(
     userMessage: string,
@@ -34,36 +32,24 @@ export class AICoachService {
       const systemPrompt = this.buildSystemPrompt(context);
       const conversationHistory = this.getConversationHistory(context.userId);
       
-      const messages = [
-        { role: 'system', content: systemPrompt },
-        ...conversationHistory,
-        { role: 'user', content: userMessage }
-      ];
-
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: messages as any,
-        temperature: 0.7,
-        max_tokens: 1000,
-        functions: [
-          {
-            name: 'analyze_user_tone',
-            description: 'Analyze the emotional tone of the user message',
-            parameters: {
-              type: 'object',
-              properties: {
-                tone: {
-                  type: 'string',
-                  enum: ['anxious', 'confident', 'curious', 'overwhelmed', 'motivated']
-                },
-                confidence: { type: 'number', minimum: 0, maximum: 1 }
-              }
-            }
-          }
-        ]
+      // Build conversation context for Gemini
+      let fullPrompt = systemPrompt + '\n\n';
+      
+      // Add conversation history
+      conversationHistory.forEach(msg => {
+        if (msg.role === 'user') {
+          fullPrompt += `User: ${msg.content}\n`;
+        } else {
+          fullPrompt += `Assistant: ${msg.content}\n`;
+        }
       });
+      
+      // Add current user message
+      fullPrompt += `User: ${userMessage}\nAssistant:`;
 
-      const aiMessage = response.choices[0].message.content || '';
+      const result = await this.model.generateContent(fullPrompt);
+      const response = await result.response;
+      const aiMessage = response.text();
       
       // Update conversation history
       this.updateConversationHistory(context.userId, userMessage, aiMessage);
@@ -80,7 +66,7 @@ export class AICoachService {
         confidenceScore: 0.85
       };
     } catch (error) {
-      console.error('OpenAI API Error:', error);
+      console.error('Gemini API Error:', error);
       return this.getFallbackResponse(context);
     }
   }
@@ -187,7 +173,27 @@ Remember: Be supportive, non-judgmental, and focus on progress over perfection.
   }
 
   async analyzeUserTone(message: string): Promise<'anxious' | 'confident' | 'curious' | 'overwhelmed' | 'motivated'> {
-    // Simple keyword-based tone analysis
+    try {
+      const prompt = `Analyze the emotional tone of this message and respond with only one word from these options: anxious, confident, curious, overwhelmed, motivated
+
+Message: "${message}"
+
+Tone:`;
+
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const tone = response.text().trim().toLowerCase();
+      
+      // Validate the response
+      const validTones = ['anxious', 'confident', 'curious', 'overwhelmed', 'motivated'];
+      if (validTones.includes(tone)) {
+        return tone as any;
+      }
+    } catch (error) {
+      console.error('Error analyzing tone with Gemini:', error);
+    }
+
+    // Fallback to keyword-based analysis
     const anxiousWords = ['worried', 'scared', 'nervous', 'afraid', 'stress'];
     const confidentWords = ['sure', 'confident', 'ready', 'excited', 'determined'];
     const curiousWords = ['how', 'why', 'what', 'learn', 'understand'];
