@@ -17,7 +17,7 @@ import { BarChart3, PieChart, LineChart, Download, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Expense } from '../types';
 import { categorizeExpenses } from '../utils/calculations';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 ChartJS.register(
@@ -40,7 +40,7 @@ interface EnhancedExpenseChartProps {
 type ChartType = 'pie' | 'bar' | 'line' | 'doughnut' | 'radar';
 
 export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expenses }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [activeChart, setActiveChart] = useState<ChartType>('pie');
   const [showFilters, setShowFilters] = useState(false);

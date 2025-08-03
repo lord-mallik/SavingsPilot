@@ -158,8 +158,15 @@ export const calculateFinancialHealthScore = (
   };
 };
 
-// Use INR formatting from currency utils
-export const formatCurrency = formatINR;
+// Format currency in INR
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 export const formatPercentage = (value: number): string => {
   return `${value.toFixed(1)}%`;

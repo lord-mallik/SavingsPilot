@@ -73,7 +73,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
     const newInsights: InsightMetric[] = [
       {
         id: 'income-expense-ratio',
-        title: 'Income vs Expense Ratio',
+        title: t('insights.incomeExpenseRatio'),
         value: `${(100 - (totalExpenses / financialData.monthlyIncome) * 100).toFixed(1)}%`,
         change: savingsRate,
         trend: savingsRate > 20 ? 'up' : savingsRate > 10 ? 'neutral' : 'down',
@@ -83,7 +83,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
       },
       {
         id: 'emergency-fund-score',
-        title: 'Emergency Fund Score',
+        title: t('insights.emergencyFundScore'),
         value: `${emergencyFundMonths.toFixed(1)} months`,
         change: emergencyFundMonths - 3,
         trend: emergencyFundMonths >= 6 ? 'up' : emergencyFundMonths >= 3 ? 'neutral' : 'down',
@@ -93,7 +93,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
       },
       {
         id: 'savings-forecast',
-        title: 'Monthly Savings Potential',
+        title: t('insights.monthlyPotential'),
         value: formatINR(financialData.monthlyIncome - totalExpenses),
         change: 15.5,
         trend: 'up',
@@ -103,7 +103,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
       },
       {
         id: 'expense-efficiency',
-        title: 'Expense Efficiency',
+        title: t('insights.expenseEfficiency'),
         value: `${((financialData.expenses.filter(e => e.type === 'needs').reduce((sum, e) => sum + e.amount, 0) / totalExpenses) * 100).toFixed(0)}%`,
         change: -5.2,
         trend: 'down',
@@ -249,7 +249,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
           <h2 className={`text-2xl font-bold ${
             theme === 'dark' ? 'text-white' : 'text-gray-800'
           }`}>
-            Financial Insights Dashboard
+            {t('insights.title')}
           </h2>
         </div>
         
@@ -404,7 +404,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
             <h4 className={`font-semibold ${
               theme === 'dark' ? 'text-white' : 'text-gray-800'
             }`}>
-              Overall Financial Health
+              {t('insights.financialHealth')}
             </h4>
             <span className={`text-2xl font-bold ${
               insights[0]?.status === 'excellent' ? 'text-green-600' :

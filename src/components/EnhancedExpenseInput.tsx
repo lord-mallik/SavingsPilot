@@ -3,7 +3,7 @@ import { Plus, Upload, Download, AlertCircle, Check, Eye, Save } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 import { Expense } from '../types';
 import { parseCSV, generateSampleCSV } from '../utils/csvParser';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface EnhancedExpenseInputProps {
@@ -34,7 +34,7 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
   monthlyIncome,
   onIncomeChange,
 }) => {
-  const { t, isRTL } = useLanguage();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   

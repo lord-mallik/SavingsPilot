@@ -343,10 +343,11 @@ export class DatabaseService {
 
   // Helper methods
   private mapToUserProfile(data: any): UserProfile {
+    const { getDefaultPersona } = require('../data/personas');
     return {
       id: data.user_id,
       name: data.name,
-      persona: { id: data.persona_id, name: 'Student', description: '', icon: '🎓', defaultIncome: 0, defaultExpenses: [], savingsTarget: 0, riskTolerance: 'low' },
+      persona: getDefaultPersona(),
       level: data.level,
       experience: data.experience,
       badges: [],

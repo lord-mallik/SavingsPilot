@@ -8,7 +8,7 @@ import { LearningModule as LearningModuleComponent } from './LearningModule';
 import { MONTHLY_CHALLENGES } from '../data/challenges';
 import { LEARNING_MODULES } from '../data/learningModules';
 import { generateExperiencePoints } from '../utils/calculations';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface EnhancedGamificationProps {
@@ -27,7 +27,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
   userProfile,
   onUpdateProfile,
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'challenges' | 'learning' | 'achievements'>('challenges');
   const [challenges, setChallenges] = useState<Challenge[]>(MONTHLY_CHALLENGES);

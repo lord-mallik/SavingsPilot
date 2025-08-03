@@ -24,6 +24,7 @@ import { getDefaultPersona } from './data/personas';
 import { useTheme } from './contexts/ThemeContext';
 import { databaseService } from './services/database';
 import { formatINR } from './utils/currency';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { v4 as uuidv4 } from 'uuid';
 
 interface User {
@@ -467,11 +468,11 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
         <AppContent />
-      </LanguageProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

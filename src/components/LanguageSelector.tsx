@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
-import { Language } from '../locales';
 
-const languages: { code: Language; name: string; flag: string }[] = [
+const languages: { code: string; name: string; flag: string }[] = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
 ];
 
 export const LanguageSelector: React.FC = () => {
-  const { language, setLanguage } = useLanguage();
+  const { i18n } = useTranslation();
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const currentLanguage = languages.find(lang => lang.code === language);
+  const currentLanguage = languages.find(lang => lang.code === i18n.language);
 
-  const handleLanguageChange = (newLanguage: Language) => {
-    setLanguage(newLanguage);
+  const handleLanguageChange = (newLanguage: string) => {
+    i18n.changeLanguage(newLanguage);
     setIsOpen(false);
   };
 
@@ -77,7 +71,7 @@ export const LanguageSelector: React.FC = () => {
                     whileHover={{ backgroundColor: theme === 'dark' ? '#374151' : '#f3f4f6' }}
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`w-full flex items-center gap-3 px-4 py-2 text-left transition-colors ${
-                      language === lang.code
+                      i18n.language === lang.code
                         ? theme === 'dark'
                           ? 'bg-blue-900 text-blue-300'
                           : 'bg-blue-50 text-blue-700'
@@ -88,7 +82,7 @@ export const LanguageSelector: React.FC = () => {
                   >
                     <span className="text-lg">{lang.flag}</span>
                     <span className="font-medium">{lang.name}</span>
-                    {language === lang.code && (
+                    {i18n.language === lang.code && (
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
