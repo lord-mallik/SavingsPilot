@@ -23,7 +23,6 @@ export class DatabaseService {
 
       if (error) {
         console.error('Error saving user profile:', error);
-        toast.error('Failed to save profile. Please try again.');
         throw error;
       }
 

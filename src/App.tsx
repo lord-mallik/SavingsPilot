@@ -234,7 +234,7 @@ const AppContent: React.FC = () => {
               <p className={`${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                {t('app.subtitle')}
+                Your Intelligent Financial Coaching Platform
               </p>
             </div>
             <div className="ml-auto flex items-center gap-3">

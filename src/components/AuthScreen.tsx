@@ -158,7 +158,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           <p className={`text-sm ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            {t('app.subtitle')}
+            Your Intelligent Financial Coaching Platform
           </p>
         </div>
 
