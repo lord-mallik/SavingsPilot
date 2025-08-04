@@ -229,7 +229,8 @@ const AppContent: React.FC = () => {
               <h1 className={`text-3xl font-bold ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
-                {t('app.title')}
+                SavingsPilot
+                {/* {t('app.title')} */}
               </h1>
               <p className={`${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
