@@ -18,7 +18,6 @@ import { motion } from 'framer-motion';
 import { Expense } from '../types';
 import { categorizeExpenses } from '../utils/calculations';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
 
 ChartJS.register(
   ArcElement,
@@ -41,7 +40,6 @@ type ChartType = 'pie' | 'bar' | 'line' | 'doughnut' | 'radar';
 
 export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expenses }) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const [activeChart, setActiveChart] = useState<ChartType>('pie');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(['needs', 'wants', 'optional']);
@@ -64,21 +62,13 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
     return acc;
   }, {} as { [key: string]: number });
 
-  const chartColors = theme === 'dark' 
-    ? {
-        needs: 'rgba(239, 68, 68, 0.8)',
-        wants: 'rgba(245, 158, 11, 0.8)',
-        optional: 'rgba(59, 130, 246, 0.8)',
-        background: '#1f2937',
-        text: '#f9fafb'
-      }
-    : {
-        needs: 'rgba(239, 68, 68, 0.8)',
-        wants: 'rgba(245, 158, 11, 0.8)',
-        optional: 'rgba(59, 130, 246, 0.8)',
-        background: '#ffffff',
-        text: '#1f2937'
-      };
+  const chartColors = {
+    needs: 'rgba(239, 68, 68, 0.8)',
+    wants: 'rgba(245, 158, 11, 0.8)',
+    optional: 'rgba(59, 130, 246, 0.8)',
+    background: '#ffffff',
+    text: '#1f2937'
+  };
 
   const pieData = {
     labels: [t('analysis.needs'), t('analysis.wants'), t('analysis.optional')],
@@ -178,7 +168,7 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           color: chartColors.text,
         },
         grid: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
       },
       x: {
@@ -186,7 +176,7 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           color: chartColors.text,
         },
         grid: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
       },
     } : undefined,
@@ -201,10 +191,10 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           color: chartColors.text,
         },
         grid: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         angleLines: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
       },
     },
@@ -263,17 +253,11 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
 
   if (expenses.length === 0) {
     return (
-      <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-      }`}>
-        <h2 className={`text-2xl font-bold mb-6 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">
           {t('analysis.title')}
         </h2>
-        <div className={`flex items-center justify-center h-64 ${
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        }`}>
+        <div className="flex items-center justify-center h-64 text-gray-500">
           <p>Add expenses to see your spending analysis</p>
         </div>
       </div>
@@ -283,25 +267,17 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
   const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className="bg-white rounded-xl shadow-lg p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <h2 className={`text-2xl font-bold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+        <h2 className="text-2xl font-bold text-gray-800">
           {t('analysis.title')}
         </h2>
         
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
           >
             <Filter className="w-4 h-4" />
             Filters
@@ -309,11 +285,7 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           
           <button
             onClick={exportChart}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
           >
             <Download className="w-4 h-4" />
             Export
@@ -332,9 +304,7 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeChart === type
                 ? 'bg-blue-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -349,13 +319,9 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className={`mb-6 p-4 rounded-lg ${
-            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-          }`}
+          className="mb-6 p-4 rounded-lg bg-gray-50"
         >
-          <h3 className={`text-sm font-medium mb-3 ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-          }`}>
+          <h3 className="text-sm font-medium mb-3 text-gray-700">
             Filter by Type:
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -370,9 +336,7 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                   selectedTypes.includes(key)
                     ? `bg-${color}-100 text-${color}-800 border-2 border-${color}-300`
-                    : theme === 'dark'
-                      ? 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
                 {label}
@@ -388,23 +352,15 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className={`p-4 rounded-lg border-l-4 border-red-500 ${
-            theme === 'dark' ? 'bg-red-900/20' : 'bg-red-50'
-          }`}
+          className="p-4 rounded-lg border-l-4 border-red-500 bg-red-50"
         >
-          <h3 className={`font-semibold ${
-            theme === 'dark' ? 'text-red-400' : 'text-red-800'
-          }`}>
+          <h3 className="font-semibold text-red-800">
             {t('analysis.needs')}
           </h3>
-          <p className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-red-300' : 'text-red-600'
-          }`}>
+          <p className="text-2xl font-bold text-red-600">
             ${typeData.needs.toLocaleString()}
           </p>
-          <p className={`text-sm ${
-            theme === 'dark' ? 'text-red-400' : 'text-red-600'
-          }`}>
+          <p className="text-sm text-red-600">
             {totalAmount > 0 ? ((typeData.needs / totalAmount) * 100).toFixed(1) : 0}% of total
           </p>
         </motion.div>
@@ -413,23 +369,15 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`p-4 rounded-lg border-l-4 border-yellow-500 ${
-            theme === 'dark' ? 'bg-yellow-900/20' : 'bg-yellow-50'
-          }`}
+          className="p-4 rounded-lg border-l-4 border-yellow-500 bg-yellow-50"
         >
-          <h3 className={`font-semibold ${
-            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'
-          }`}>
+          <h3 className="font-semibold text-yellow-800">
             {t('analysis.wants')}
           </h3>
-          <p className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'
-          }`}>
+          <p className="text-2xl font-bold text-yellow-600">
             ${typeData.wants.toLocaleString()}
           </p>
-          <p className={`text-sm ${
-            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
-          }`}>
+          <p className="text-sm text-yellow-600">
             {totalAmount > 0 ? ((typeData.wants / totalAmount) * 100).toFixed(1) : 0}% of total
           </p>
         </motion.div>
@@ -438,23 +386,15 @@ export const EnhancedExpenseChart: React.FC<EnhancedExpenseChartProps> = ({ expe
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className={`p-4 rounded-lg border-l-4 border-blue-500 ${
-            theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50'
-          }`}
+          className="p-4 rounded-lg border-l-4 border-blue-500 bg-blue-50"
         >
-          <h3 className={`font-semibold ${
-            theme === 'dark' ? 'text-blue-400' : 'text-blue-800'
-          }`}>
+          <h3 className="font-semibold text-blue-800">
             {t('analysis.optional')}
           </h3>
-          <p className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-blue-300' : 'text-blue-600'
-          }`}>
+          <p className="text-2xl font-bold text-blue-600">
             ${typeData.optional.toLocaleString()}
           </p>
-          <p className={`text-sm ${
-            theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-          }`}>
+          <p className="text-sm text-blue-600">
             {totalAmount > 0 ? ((typeData.optional / totalAmount) * 100).toFixed(1) : 0}% of total
           </p>
         </motion.div>

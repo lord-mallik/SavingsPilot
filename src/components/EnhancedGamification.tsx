@@ -9,7 +9,6 @@ import { MONTHLY_CHALLENGES } from '../data/challenges';
 import { LEARNING_MODULES } from '../data/learningModules';
 import { generateExperiencePoints } from '../utils/calculations';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
 
 interface EnhancedGamificationProps {
   userProfile: UserProfile;
@@ -28,7 +27,6 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
   onUpdateProfile,
 }) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'challenges' | 'learning' | 'achievements'>('challenges');
   const [challenges, setChallenges] = useState<Challenge[]>(MONTHLY_CHALLENGES);
   const [learningModules, setLearningModules] = useState<LearningModule[]>(LEARNING_MODULES);
@@ -179,9 +177,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
     
     return (
       <div className="mt-4">
-        <h4 className={`text-sm font-medium mb-2 ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-        }`}>
+        <h4 className="text-sm font-medium mb-2 text-gray-700">
           Weekly Progress
         </h4>
         <div className="flex items-end gap-1 h-16">
@@ -203,7 +199,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
                     ? 'bg-green-500' 
                     : height > 0 
                       ? 'bg-blue-500' 
-                      : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+                      : 'bg-gray-200'
                 }`}
                 title={`${date.toLocaleDateString()}: ${dayData?.progress || 0}`}
               />
@@ -219,9 +215,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
   };
 
   return (
-    <div className={`rounded-xl shadow-lg transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className="bg-white rounded-xl shadow-lg">
       {showConfetti && (
         <Confetti
           width={window.innerWidth}
@@ -249,14 +243,10 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
       </AnimatePresence>
 
       {/* Header */}
-      <div className={`p-6 border-b ${
-        theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-      }`}>
+      <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
           <Zap className="w-8 h-8 text-yellow-500" />
-          <h2 className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+          <h2 className="text-2xl font-bold text-gray-800">
             Gamification Hub
           </h2>
         </div>
@@ -274,9 +264,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                   activeTab === tab.id
                     ? 'bg-blue-100 text-blue-700'
-                    : theme === 'dark'
-                      ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -303,9 +291,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
             {/* Active Challenges */}
             {activeChallenges.length > 0 && (
               <div>
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   {t('challenges.active')}
                 </h3>
                 <div className="grid gap-4">
@@ -314,26 +300,18 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
                       key={challenge.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`p-6 rounded-xl border-l-4 border-blue-500 transition-colors ${
-                        theme === 'dark' ? 'bg-gray-700' : 'bg-white shadow-lg'
-                      }`}
+                      className="p-6 rounded-xl border-l-4 border-blue-500 bg-white shadow-lg"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h4 className={`text-xl font-bold mb-2 ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-800'
-                          }`}>
+                          <h4 className="text-xl font-bold mb-2 text-gray-800">
                             {challenge.title}
                           </h4>
-                          <p className={`mb-3 ${
-                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                          }`}>
+                          <p className="mb-3 text-gray-600">
                             {challenge.description}
                           </p>
                           
-                          <div className={`flex items-center gap-4 text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
                               <span>{challenge.duration} {t('common.days')}</span>
@@ -357,20 +335,14 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
                       {/* Progress Bar */}
                       <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
-                          <span className={`text-sm font-medium ${
-                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                          }`}>
+                          <span className="text-sm font-medium text-gray-700">
                             {t('challenges.progress')}
                           </span>
-                          <span className={`text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
+                          <span className="text-sm text-gray-600">
                             {challenge.progress} / {challenge.target}
                           </span>
                         </div>
-                        <div className={`w-full rounded-full h-3 ${
-                          theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
-                        }`}>
+                        <div className="w-full rounded-full h-3 bg-gray-200">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.min((challenge.progress / challenge.target) * 100, 100)}%` }}
@@ -413,9 +385,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
             {/* Available Challenges */}
             {availableChallenges.length > 0 && (
               <div>
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   {t('challenges.available')}
                 </h3>
                 <div className="grid gap-4">
@@ -434,9 +404,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
             {/* Completed Challenges */}
             {completedChallenges.length > 0 && (
               <div>
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   {t('challenges.completed')}
                 </h3>
                 <div className="grid gap-4">
@@ -459,9 +427,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
             {/* Available Modules */}
             {incompleteLearningModules.length > 0 && (
               <div>
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   Learning Modules
                 </h3>
                 <div className="space-y-4">
@@ -479,9 +445,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
             {/* Completed Modules */}
             {completedLearningModules.length > 0 && (
               <div>
-                <h3 className={`text-lg font-semibold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   Completed Modules
                 </h3>
                 <div className="space-y-4">
@@ -500,9 +464,7 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
 
         {activeTab === 'achievements' && (
           <div>
-            <h3 className={`text-lg font-semibold mb-4 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
               Your Badges
             </h3>
             {userProfile.badges.length > 0 ? (
@@ -513,27 +475,17 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`p-4 rounded-lg border transition-colors ${
-                      theme === 'dark'
-                        ? 'bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-yellow-700'
-                        : 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200'
-                    }`}
+                    className="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200"
                   >
                     <div className="text-center">
                       <span className="text-4xl mb-2 block">{badge.icon}</span>
-                      <h4 className={`font-semibold mb-1 ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-800'
-                      }`}>
+                      <h4 className="font-semibold mb-1 text-gray-800">
                         {badge.name}
                       </h4>
-                      <p className={`text-sm mb-2 ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
+                      <p className="text-sm mb-2 text-gray-600">
                         {badge.description}
                       </p>
-                      <p className={`text-xs ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
+                      <p className="text-xs text-gray-500">
                         Earned on {new Date(badge.unlockedAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -542,12 +494,8 @@ export const EnhancedGamification: React.FC<EnhancedGamificationProps> = ({
               </div>
             ) : (
               <div className="text-center py-8">
-                <Trophy className={`w-16 h-16 mx-auto mb-4 ${
-                  theme === 'dark' ? 'text-gray-600' : 'text-gray-300'
-                }`} />
-                <p className={`${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>
+                <Trophy className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500">
                   No badges earned yet. Complete challenges and goals to unlock achievements!
                 </p>
               </div>

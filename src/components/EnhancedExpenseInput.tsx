@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Expense } from '../types';
 import { parseCSV, generateSampleCSV } from '../utils/csvParser';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
 
 interface EnhancedExpenseInputProps {
   expenses: Expense[];
@@ -35,7 +34,6 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
   onIncomeChange,
 }) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [newExpense, setNewExpense] = useState({
@@ -150,13 +148,9 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
   const remainingIncome = monthlyIncome - totalExpenses;
 
   return (
-    <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className={`text-2xl font-bold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+        <h2 className="text-2xl font-bold text-gray-800">
           {t('input.monthlyIncome')}
         </h2>
         
@@ -196,31 +190,21 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
       
       {/* Monthly Income */}
       <div className="mb-6">
-        <label className={`block text-sm font-medium mb-2 ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-        }`}>
+        <label className="block text-sm font-medium mb-2 text-gray-700">
           {t('input.monthlyIncome')}
         </label>
         <input
           type="number"
           value={monthlyIncome || ''}
           onChange={(e) => handleIncomeChange(parseFloat(e.target.value) || 0)}
-          className={`w-full px-4 py-2 border rounded-lg transition-colors duration-200 ${
-            theme === 'dark'
-              ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-              : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-          } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+          className="w-full px-4 py-2 border rounded-lg transition-colors duration-200 bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
           placeholder="Enter your monthly income"
         />
       </div>
 
       {/* CSV Upload Section */}
-      <div className={`mb-6 p-4 rounded-lg transition-colors duration-200 ${
-        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-      }`}>
-        <h3 className={`text-lg font-semibold mb-3 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+      <div className="mb-6 p-4 rounded-lg bg-gray-50">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">
           Bulk Upload
         </h3>
         
@@ -246,11 +230,7 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
           
           <button
             onClick={downloadSampleCSV}
-            className={`flex items-center justify-center px-4 py-2 rounded-lg transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-600 text-white hover:bg-gray-500'
-                : 'bg-gray-600 text-white hover:bg-gray-700'
-            }`}
+            className="flex items-center justify-center px-4 py-2 rounded-lg transition-colors bg-gray-600 text-white hover:bg-gray-700"
           >
             <Download className="w-4 h-4 mr-2" />
             {t('input.sampleCSV')}
@@ -261,13 +241,9 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex items-center gap-2 p-2 rounded ${
-              theme === 'dark' ? 'bg-gray-600' : 'bg-blue-50'
-            }`}
+            className="flex items-center gap-2 p-2 rounded bg-blue-50"
           >
-            <span className={`text-sm ${
-              theme === 'dark' ? 'text-gray-300' : 'text-blue-700'
-            }`}>
+            <span className="text-sm text-blue-700">
               {t('input.fileName')}: {uploadedFileName}
             </span>
           </motion.div>
@@ -298,23 +274,15 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className={`max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl overflow-hidden ${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-              }`}
+              className="max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl overflow-hidden bg-white"
             >
-              <div className={`p-6 border-b ${
-                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-              }`}>
+              <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className={`text-xl font-bold ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-800'
-                  }`}>
+                  <h3 className="text-xl font-bold text-gray-800">
                     {t('input.preview')} ({csvPreview.length} items)
                   </h3>
                   <div className="flex items-center gap-2">
-                    <Eye className={`w-5 h-5 ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`} />
+                    <Eye className="w-5 h-5 text-gray-600" />
                   </div>
                 </div>
               </div>
@@ -324,15 +292,11 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
                   {csvPreview.map((expense, index) => (
                     <div
                       key={index}
-                      className={`flex items-center justify-between p-3 rounded-lg ${
-                        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-                      }`}
+                      className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className={`font-medium capitalize ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-800'
-                          }`}>
+                          <span className="font-medium capitalize text-gray-800">
                             {expense.category}
                           </span>
                           <span className={`px-2 py-1 text-xs rounded-full ${
@@ -344,16 +308,12 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
                           </span>
                         </div>
                         {expense.description && (
-                          <p className={`text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
+                          <p className="text-sm text-gray-600">
                             {expense.description}
                           </p>
                         )}
                       </div>
-                      <span className={`font-semibold ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-800'
-                      }`}>
+                      <span className="font-semibold text-gray-800">
                         ${expense.amount}
                       </span>
                     </div>
@@ -361,16 +321,10 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
                 </div>
               </div>
               
-              <div className={`p-6 border-t flex gap-3 ${
-                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-              }`}>
+              <div className="p-6 border-t border-gray-200 flex gap-3">
                 <button
                   onClick={cancelCSVImport}
-                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    theme === 'dark'
-                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  className="flex-1 px-4 py-2 rounded-lg font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
                 >
                   {t('common.cancel')}
                 </button>
@@ -388,20 +342,14 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
 
       {/* Manual Entry */}
       <div className="mb-6">
-        <h3 className={`text-lg font-semibold mb-3 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">
           {t('input.addExpense')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <select
             value={newExpense.category}
             onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-            className={`px-3 py-2 border rounded-lg transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
-                : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-            } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+            className="px-3 py-2 border rounded-lg transition-colors duration-200 bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
           >
             <option value="">{t('input.category')}</option>
             {EXPENSE_CATEGORIES.map(cat => (
@@ -413,22 +361,14 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
             value={newExpense.amount}
             onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
             placeholder={t('input.amount')}
-            className={`px-3 py-2 border rounded-lg transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-            } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+            className="px-3 py-2 border rounded-lg transition-colors duration-200 bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
           />
           <input
             type="text"
             value={newExpense.description}
             onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
             placeholder={t('input.description')}
-            className={`px-3 py-2 border rounded-lg transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-            } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+            className="px-3 py-2 border rounded-lg transition-colors duration-200 bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
           />
           <motion.button
             whileHover={{ scale: 1.02 }}
@@ -446,9 +386,7 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
       {/* Expense List */}
       {expenses.length > 0 && (
         <div className="mb-6">
-          <h3 className={`text-lg font-semibold mb-3 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+          <h3 className="text-lg font-semibold mb-3 text-gray-800">
             Current Expenses
           </h3>
           <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -459,15 +397,11 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-                  }`}
+                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className={`font-medium capitalize ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-800'
-                      }`}>
+                      <span className="font-medium capitalize text-gray-800">
                         {expense.category}
                       </span>
                       <span className={`px-2 py-1 text-xs rounded-full ${
@@ -479,17 +413,13 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
                       </span>
                     </div>
                     {expense.description && (
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
+                      <p className="text-sm text-gray-600">
                         {expense.description}
                       </p>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`font-semibold ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-800'
-                    }`}>
+                    <span className="font-semibold text-gray-800">
                       ${expense.amount}
                     </span>
                     <motion.button
@@ -513,47 +443,31 @@ export const EnhancedExpenseInput: React.FC<EnhancedExpenseInputProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-lg ${
-            theme === 'dark'
-              ? 'bg-gradient-to-r from-blue-900 to-green-900'
-              : 'bg-gradient-to-r from-blue-50 to-green-50'
-          }`}
+          className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-green-50"
         >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
             <div>
-              <p className={`text-sm ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
+              <p className="text-sm text-gray-600">
                 Monthly Income
               </p>
-              <p className={`text-xl font-bold ${
-                theme === 'dark' ? 'text-green-400' : 'text-green-600'
-              }`}>
+              <p className="text-xl font-bold text-green-600">
                 ${monthlyIncome}
               </p>
             </div>
             <div>
-              <p className={`text-sm ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
+              <p className="text-sm text-gray-600">
                 Total Expenses
               </p>
-              <p className={`text-xl font-bold ${
-                theme === 'dark' ? 'text-red-400' : 'text-red-600'
-              }`}>
+              <p className="text-xl font-bold text-red-600">
                 ${totalExpenses}
               </p>
             </div>
             <div className="col-span-2 md:col-span-1">
-              <p className={`text-sm ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
+              <p className="text-sm text-gray-600">
                 Remaining
               </p>
               <p className={`text-xl font-bold ${
-                remainingIncome >= 0 
-                  ? theme === 'dark' ? 'text-green-400' : 'text-green-600'
-                  : theme === 'dark' ? 'text-red-400' : 'text-red-600'
+                remainingIncome >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 ${remainingIncome}
               </p>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { PiggyBank, Eye, EyeOff, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { signInWithEmail, signUpWithEmail } from '../config/supabase';
 import toast from 'react-hot-toast';
@@ -13,7 +12,6 @@ interface AuthScreenProps {
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,18 +123,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
-      theme === 'dark' 
-        ? 'bg-gradient-to-br from-gray-900 to-blue-900' 
-        : 'bg-gradient-to-br from-blue-50 to-green-50'
-    }`}>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-green-50">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={`w-full max-w-md ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-        } rounded-2xl shadow-2xl p-8 transition-colors duration-300`}
+        className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8"
       >
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -149,15 +141,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
             <PiggyBank className="w-8 h-8 text-white" />
           </motion.div>
           
-          <h1 className={`text-2xl font-bold mb-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">
             {isLogin ? t('auth.welcomeBack') : t('auth.getStarted')}
           </h1>
           
-          <p className={`text-sm ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>
+          <p className="text-sm text-gray-600">
             Your Intelligent Financial Coaching Platform
           </p>
         </div>
@@ -171,20 +159,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <label className={`block text-sm font-medium mb-2 ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
                 Full Name
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500'
-                } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+                className="w-full px-4 py-3 rounded-lg border transition-colors duration-200 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
                 placeholder="Enter your full name"
               />
               {errors.name && (
@@ -194,20 +176,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           )}
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('auth.email')}
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 ${
-                theme === 'dark'
-                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500'
-              } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+              className="w-full px-4 py-3 rounded-lg border transition-colors duration-200 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -216,9 +192,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('auth.password')}
             </label>
             <div className="relative">
@@ -226,19 +200,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className={`w-full px-4 py-3 pr-12 rounded-lg border transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500'
-                } focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none`}
+                className="w-full px-4 py-3 pr-12 rounded-lg border transition-colors duration-200 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none"
                 placeholder="Enter your password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                } transition-colors`}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -280,9 +248,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
 
         {/* Toggle between login and signup */}
         <div className="mt-6 text-center">
-          <p className={`text-sm ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>
+          <p className="text-sm text-gray-600">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
             <button
               onClick={() => {
@@ -298,13 +264,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
         </div>
 
         {/* Demo credentials */}
-        <div className={`mt-6 p-4 rounded-lg ${
-          theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-        }`}>
+        <div className="mt-6 p-4 rounded-lg bg-gray-50">
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-xs ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>
+            <p className="text-xs text-gray-600">
               Try the demo:
             </p>
             <button
@@ -314,9 +276,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
               Use Demo Account
             </button>
           </div>
-          <p className={`text-xs ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>
+          <p className="text-xs text-gray-600">
             Email: demo@savingspilot.com<br />
             Password: demo123
           </p>

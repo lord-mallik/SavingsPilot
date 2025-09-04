@@ -1,7 +1,11 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "savingspilot-hackathon-mvp",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Financial Literacy & Wellbeing platform for Indian households - Syrotech Hackathon Winner",
+  "keywords": ["financial-literacy", "savings", "emergency-fund", "indian-families", "accessibility", "ai-coach"],
+  "author": "SavingsPilot Team",
+  "homepage": "https://savingspilot.netlify.app",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +15,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "deploy": "npm run build && echo 'Ready for deployment to Netlify/Vercel'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

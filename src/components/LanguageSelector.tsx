@@ -2,22 +2,14 @@ import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
-import { Language } from '../locales';
 
-const languages: { code: Language; name: string; flag: string }[] = [
+const languages: { code: string; name: string; flag: string }[] = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
 ];
 
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
-  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language);
@@ -33,11 +25,7 @@ export const LanguageSelector: React.FC = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-300 ${
-          theme === 'dark'
-            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-        }`}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
       >
         <Globe className="w-4 h-4" />
         <span className="text-lg">{currentLanguage?.flag}</span>
@@ -64,26 +52,18 @@ export const LanguageSelector: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className={`absolute top-full mt-2 right-0 z-20 min-w-[200px] rounded-lg shadow-lg border ${
-                theme === 'dark'
-                  ? 'bg-gray-800 border-gray-700'
-                  : 'bg-white border-gray-200'
-              }`}
+              className="absolute top-full mt-2 right-0 z-20 min-w-[200px] rounded-lg shadow-lg border bg-white border-gray-200"
             >
               <div className="py-2">
                 {languages.map((lang) => (
                   <motion.button
                     key={lang.code}
-                    whileHover={{ backgroundColor: theme === 'dark' ? '#374151' : '#f3f4f6' }}
+                    whileHover={{ backgroundColor: '#f3f4f6' }}
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`w-full flex items-center gap-3 px-4 py-2 text-left transition-colors ${
                       i18n.language === lang.code
-                        ? theme === 'dark'
-                          ? 'bg-blue-900 text-blue-300'
-                          : 'bg-blue-50 text-blue-700'
-                        : theme === 'dark'
-                          ? 'text-gray-300 hover:text-white'
-                          : 'text-gray-700 hover:text-gray-900'
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-gray-700 hover:text-gray-900'
                     }`}
                   >
                     <span className="text-lg">{lang.flag}</span>

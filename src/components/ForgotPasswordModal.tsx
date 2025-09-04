@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { resetPassword } from '../config/supabase';
-import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -29,7 +28,6 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { theme } = useTheme();
   const { t } = useTranslation();
   const [step, setStep] = useState<'form' | 'success' | 'error'>('form');
   const [isLoading, setIsLoading] = useState(false);
@@ -89,25 +87,17 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${
-              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-            }`}
+            className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-white"
             role="dialog"
             aria-labelledby="forgot-password-title"
             aria-describedby="forgot-password-description"
           >
             {/* Header */}
-            <div className={`p-6 border-b ${
-              theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-            }`}>
+            <div className="p-6 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleClose}
-                  className={`p-2 rounded-lg transition-colors ${
-                    theme === 'dark'
-                      ? 'hover:bg-gray-700 text-gray-400'
-                      : 'hover:bg-gray-100 text-gray-600'
-                  }`}
+                  className="p-2 rounded-lg transition-colors hover:bg-gray-100 text-gray-600"
                   aria-label="Close modal"
                 >
                   <ArrowLeft className="w-5 h-5" />
@@ -115,18 +105,14 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                 <div>
                   <h2
                     id="forgot-password-title"
-                    className={`text-xl font-bold ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}
+                    className="text-xl font-bold text-gray-900"
                   >
                     {step === 'form' ? 'Reset Password' : 
                      step === 'success' ? 'Check Your Email' : 'Reset Failed'}
                   </h2>
                   <p
                     id="forgot-password-description"
-                    className={`text-sm ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}
+                    className="text-sm text-gray-600"
                   >
                     {step === 'form' ? 'Enter your email to receive reset instructions' :
                      step === 'success' ? 'We sent you a password reset link' :
@@ -151,16 +137,12 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                     <div>
                       <label
                         htmlFor="reset-email"
-                        className={`block text-sm font-medium mb-2 ${
-                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                        }`}
+                        className="block text-sm font-medium mb-2 text-gray-700"
                       >
                         Email Address
                       </label>
                       <div className="relative">
-                        <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                        }`} />
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
                           id="reset-email"
                           type="email"
@@ -168,9 +150,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                           className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-colors duration-200 ${
                             errors.email
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                              : theme === 'dark'
-                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500'
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
                           } focus:ring-2 focus:ring-opacity-20 focus:outline-none`}
                           placeholder="Enter your email address"
                           disabled={isLoading}
@@ -226,24 +206,16 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                       <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
                     <div>
-                      <h3 className={`text-lg font-semibold mb-2 ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
-                      }`}>
+                      <h3 className="text-lg font-semibold mb-2 text-gray-900">
                         Email Sent Successfully!
                       </h3>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
+                      <p className="text-sm text-gray-600">
                         We've sent a password reset link to{' '}
                         <span className="font-medium">{getValues('email')}</span>
                       </p>
                     </div>
-                    <div className={`p-4 rounded-lg ${
-                      theme === 'dark' ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'
-                    }`}>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-blue-300' : 'text-blue-800'
-                      }`}>
+                    <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                      <p className="text-sm text-blue-800">
                         Check your email and click the reset link to create a new password.
                         The link will expire in 1 hour.
                       </p>
@@ -269,14 +241,10 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                       <AlertTriangle className="w-8 h-8 text-red-600" />
                     </div>
                     <div>
-                      <h3 className={`text-lg font-semibold mb-2 ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
-                      }`}>
+                      <h3 className="text-lg font-semibold mb-2 text-gray-900">
                         Reset Failed
                       </h3>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
+                      <p className="text-sm text-gray-600">
                         We couldn't send the reset email. Please check your email address and try again.
                       </p>
                     </div>
@@ -289,11 +257,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                       </button>
                       <button
                         onClick={handleClose}
-                        className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                          theme === 'dark'
-                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
                       >
                         Cancel
                       </button>

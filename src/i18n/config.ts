@@ -14,10 +14,7 @@ const resources = {
         simulator: 'Simulator',
         coach: 'AI Coach',
         challenges: 'Challenges',
-        team: 'Team',
-        share: 'Share',
         accessibility: 'Accessibility',
-        privacy: 'Privacy',
         insights: 'Insights'
       },
       // Authentication
@@ -81,6 +78,16 @@ const resources = {
         monthlyPotential: 'Monthly Savings Potential',
         financialHealth: 'Financial Health Score'
       },
+      // Challenges
+      challenges: {
+        title: 'Challenges',
+        active: 'Active Challenges',
+        available: 'Available Challenges',
+        completed: 'Completed Challenges',
+        start: 'Start Challenge',
+        complete: 'Mark Complete',
+        progress: 'Progress'
+      },
       // Common
       common: {
         loading: 'Loading...',
@@ -110,10 +117,7 @@ const resources = {
         simulator: 'सिमुलेटर',
         coach: 'AI कोच',
         challenges: 'चुनौतियां',
-        team: 'टीम',
-        share: 'साझा करें',
         accessibility: 'पहुंच',
-        privacy: 'गोपनीयता',
         insights: 'अंतर्दृष्टि'
       },
       auth: {
@@ -171,6 +175,15 @@ const resources = {
         expenseEfficiency: 'व्यय दक्षता',
         monthlyPotential: 'मासिक बचत क्षमता',
         financialHealth: 'वित्तीय स्वास्थ्य स्कोर'
+      },
+      challenges: {
+        title: 'चुनौतियां',
+        active: 'सक्रिय चुनौतियां',
+        available: 'उपलब्ध चुनौतियां',
+        completed: 'पूर्ण चुनौतियां',
+        start: 'चुनौती शुरू करें',
+        complete: 'पूर्ण चिह्नित करें',
+        progress: 'प्रगति'
       },
       common: {
         loading: 'लोड हो रहा है...',

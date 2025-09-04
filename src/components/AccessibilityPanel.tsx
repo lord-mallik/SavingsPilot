@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Eye, Type, Palette, Volume2, Keyboard, Focus, MousePointer } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { UserProfile } from '../types';
-import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 interface AccessibilityPanelProps {
@@ -14,7 +13,6 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
   userProfile,
   onUpdateProfile,
 }) => {
-  const { theme } = useTheme();
   const { t } = useTranslation();
   const [focusVisible, setFocusVisible] = useState(false);
 
@@ -111,14 +109,10 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
   ];
 
   return (
-    <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex items-center gap-3 mb-6">
         <Eye className="w-8 h-8 text-blue-600" />
-        <h2 className={`text-2xl font-bold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+        <h2 className="text-2xl font-bold text-gray-800">
           Accessibility Settings
         </h2>
       </div>
@@ -134,20 +128,14 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
             className="flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${
-                theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
-              }`}>
+              <div className="p-2 rounded-lg bg-gray-100">
                 {feature.icon}
               </div>
               <div>
-                <h3 className={`font-medium ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-800'
-                }`}>
+                <h3 className="font-medium text-gray-800">
                   {feature.title}
                 </h3>
-                <p className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <p className="text-sm text-gray-600">
                   {feature.description}
                 </p>
               </div>
@@ -164,7 +152,7 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
               <div className={`w-11 h-6 rounded-full peer transition-colors ${
                 feature.value 
                   ? 'bg-blue-600' 
-                  : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+                  : 'bg-gray-200'
               } peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}>
               </div>
             </label>
@@ -175,20 +163,14 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
       {/* Font Size Control */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className={`p-2 rounded-lg ${
-            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
-          }`}>
+          <div className="p-2 rounded-lg bg-gray-100">
             <Type className="w-5 h-5" />
           </div>
           <div>
-            <h3 className={`font-medium ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
+            <h3 className="font-medium text-gray-800">
               Font Size
             </h3>
-            <p className={`text-sm ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>
+            <p className="text-sm text-gray-600">
               Adjust text size for better readability
             </p>
           </div>
@@ -202,9 +184,7 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
               className={`p-4 rounded-lg border-2 transition-all text-center ${
                 userProfile.preferences.accessibility.fontSize === size.value
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : theme === 'dark'
-                    ? 'border-gray-600 bg-gray-700 hover:border-gray-500'
-                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                  : 'border-gray-200 bg-gray-50 hover:border-gray-300'
               }`}
               aria-label={`Set font size to ${size.label}`}
             >
@@ -214,9 +194,7 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
               }`}>
                 {size.preview}
               </div>
-              <p className={`text-xs ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`}>
+              <p className="text-xs text-gray-600">
                 {size.label}
               </p>
             </button>
@@ -225,23 +203,19 @@ export const AccessibilityPanel: React.FC<AccessibilityPanelProps> = ({
       </div>
 
       {/* Keyboard Navigation Help */}
-      <div className={`p-4 rounded-lg ${
-        theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'
-      }`}>
+      <div className="p-4 rounded-lg bg-blue-50">
         <div className="flex items-center gap-2 mb-3">
           <Keyboard className="w-5 h-5 text-blue-600" />
-          <h3 className={`font-medium ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+          <h3 className="font-medium text-gray-800">
             Keyboard Navigation
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+          <div className="text-gray-700">
             <p><kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Tab</kbd> Navigate forward</p>
             <p><kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Shift+Tab</kbd> Navigate backward</p>
           </div>
-          <div className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+          <div className="text-gray-700">
             <p><kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Enter</kbd> Activate button</p>
             <p><kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Esc</kbd> Close modal</p>
           </div>

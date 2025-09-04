@@ -16,7 +16,6 @@ import {
 } from 'chart.js';
 import { FinancialData, UserProfile } from '../types';
 import { formatINR, formatIndianNumber } from '../utils/currency';
-import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
@@ -51,7 +50,6 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
   financialData,
   userProfile,
 }) => {
-  const { theme } = useTheme();
   const { t } = useTranslation();
   const [selectedPeriod, setSelectedPeriod] = useState<'1M' | '3M' | '6M' | '1Y'>('3M');
   const [insights, setInsights] = useState<InsightMetric[]>([]);
@@ -118,10 +116,10 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
 
   const getStatusColor = (status: string) => {
     const colors = {
-      excellent: theme === 'dark' ? 'text-green-400 bg-green-900/20' : 'text-green-600 bg-green-50',
-      good: theme === 'dark' ? 'text-blue-400 bg-blue-900/20' : 'text-blue-600 bg-blue-50',
-      warning: theme === 'dark' ? 'text-yellow-400 bg-yellow-900/20' : 'text-yellow-600 bg-yellow-50',
-      critical: theme === 'dark' ? 'text-red-400 bg-red-900/20' : 'text-red-600 bg-red-50'
+      excellent: 'text-green-600 bg-green-50',
+      good: 'text-blue-600 bg-blue-50',
+      warning: 'text-yellow-600 bg-yellow-50',
+      critical: 'text-red-600 bg-red-50'
     };
     return colors[status as keyof typeof colors] || colors.good;
   };
@@ -163,8 +161,8 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
         {
           label: 'Projected Savings',
           data: projectedSavings,
-          borderColor: theme === 'dark' ? '#60A5FA' : '#3B82F6',
-          backgroundColor: theme === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+          borderColor: '#3B82F6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
           tension: 0.4,
           fill: true,
         },
@@ -186,9 +184,9 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
         {
           data: [expensesByType.needs, expensesByType.wants, expensesByType.optional],
           backgroundColor: [
-            theme === 'dark' ? '#EF4444' : '#DC2626',
-            theme === 'dark' ? '#F59E0B' : '#D97706',
-            theme === 'dark' ? '#3B82F6' : '#2563EB',
+            '#DC2626',
+            '#D97706',
+            '#2563EB',
           ],
           borderWidth: 0,
         },
@@ -204,10 +202,10 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
         display: false,
       },
       tooltip: {
-        backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF',
-        titleColor: theme === 'dark' ? '#F9FAFB' : '#111827',
-        bodyColor: theme === 'dark' ? '#D1D5DB' : '#374151',
-        borderColor: theme === 'dark' ? '#374151' : '#E5E7EB',
+        backgroundColor: '#FFFFFF',
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        borderColor: '#E5E7EB',
         borderWidth: 1,
         callbacks: {
           label: function(context: any) {
@@ -219,18 +217,18 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
     scales: {
       x: {
         grid: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
-          color: theme === 'dark' ? '#D1D5DB' : '#6B7280',
+          color: '#6B7280',
         },
       },
       y: {
         grid: {
-          color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
-          color: theme === 'dark' ? '#D1D5DB' : '#6B7280',
+          color: '#6B7280',
           callback: function(value: any) {
             return formatIndianNumber(value);
           },
@@ -240,21 +238,17 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
   };
 
   return (
-    <div className={`rounded-xl shadow-lg p-6 transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <TrendingUp className="w-8 h-8 text-blue-600" />
-          <h2 className={`text-2xl font-bold ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+          <h2 className="text-2xl font-bold text-gray-800">
             {t('insights.title')}
           </h2>
         </div>
         
         {/* Period Selector */}
-        <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg">
+        <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
           {(['1M', '3M', '6M', '1Y'] as const).map((period) => (
             <button
               key={period}
@@ -262,9 +256,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
               className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                 selectedPeriod === period
                   ? 'bg-blue-600 text-white'
-                  : theme === 'dark'
-                    ? 'text-gray-300 hover:text-white'
-                    : 'text-gray-600 hover:text-gray-800'
+                  : 'text-gray-600 hover:text-gray-800'
               }`}
             >
               {period}
@@ -296,9 +288,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
               <p className="text-xs opacity-75">{insight.description}</p>
             </div>
             
-            <div className={`text-xs p-2 rounded ${
-              theme === 'dark' ? 'bg-gray-800/50' : 'bg-white/50'
-            }`}>
+            <div className="text-xs p-2 rounded bg-white/50">
               <p className="font-medium">💡 {insight.actionable}</p>
             </div>
           </motion.div>
@@ -308,12 +298,8 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Savings Forecast */}
-        <div className={`p-4 rounded-lg ${
-          theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-        }`}>
-          <h3 className={`text-lg font-semibold mb-4 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+        <div className="p-4 rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">
             12-Month Savings Forecast
           </h3>
           <div className="h-64">
@@ -322,12 +308,8 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
         </div>
 
         {/* Expense Breakdown */}
-        <div className={`p-4 rounded-lg ${
-          theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-        }`}>
-          <h3 className={`text-lg font-semibold mb-4 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-800'
-          }`}>
+        <div className="p-4 rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">
             Expense Distribution
           </h3>
           <div className="h-64">
@@ -337,12 +319,8 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
       </div>
 
       {/* Monthly Summary */}
-      <div className={`p-6 rounded-lg ${
-        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-      }`}>
-        <h3 className={`text-lg font-semibold mb-4 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-800'
-        }`}>
+      <div className="p-6 rounded-lg bg-gray-50">
+        <h3 className="text-lg font-semibold mb-4 text-gray-800">
           Monthly Financial Summary
         </h3>
         
@@ -350,15 +328,11 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <PiggyBank className="w-6 h-6 text-green-600" />
-              <span className={`font-medium ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <span className="font-medium text-gray-700">
                 Total Income
               </span>
             </div>
-            <p className={`text-3xl font-bold ${
-              theme === 'dark' ? 'text-green-400' : 'text-green-600'
-            }`}>
+            <p className="text-3xl font-bold text-green-600">
               {formatINR(financialData.monthlyIncome)}
             </p>
           </div>
@@ -366,15 +340,11 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Target className="w-6 h-6 text-red-600" />
-              <span className={`font-medium ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <span className="font-medium text-gray-700">
                 Total Expenses
               </span>
             </div>
-            <p className={`text-3xl font-bold ${
-              theme === 'dark' ? 'text-red-400' : 'text-red-600'
-            }`}>
+            <p className="text-3xl font-bold text-red-600">
               {formatINR(financialData.expenses.reduce((sum, exp) => sum + exp.amount, 0))}
             </p>
           </div>
@@ -382,16 +352,13 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Shield className="w-6 h-6 text-blue-600" />
-              <span className={`font-medium ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <span className="font-medium text-gray-700">
                 Net Savings
               </span>
             </div>
             <p className={`text-3xl font-bold ${
               (financialData.monthlyIncome - financialData.expenses.reduce((sum, exp) => sum + exp.amount, 0)) >= 0
-                ? theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-                : theme === 'dark' ? 'text-red-400' : 'text-red-600'
+                ? 'text-blue-600' : 'text-red-600'
             }`}>
               {formatINR(financialData.monthlyIncome - financialData.expenses.reduce((sum, exp) => sum + exp.amount, 0))}
             </p>
@@ -399,11 +366,9 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
         </div>
 
         {/* Financial Health Score */}
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+        <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <h4 className={`font-semibold ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
+            <h4 className="font-semibold text-gray-800">
               {t('insights.financialHealth')}
             </h4>
             <span className={`text-2xl font-bold ${
@@ -420,9 +385,7 @@ export const FinancialInsightsDashboard: React.FC<FinancialInsightsDashboardProp
             </span>
           </div>
           
-          <div className={`w-full rounded-full h-3 ${
-            theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
-          }`}>
+          <div className="w-full rounded-full h-3 bg-gray-200">
             <motion.div
               initial={{ width: 0 }}
               animate={{ 

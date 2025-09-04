@@ -129,3 +129,32 @@ export const parseIndianAmount = (input: string): number => {
   
   return parseFloat(cleaned) || 0;
 };
+// Format currency for Indian context with stress indicators
+export const formatCurrencyWithStress = (amount: number, isStressful: boolean = false): string => {
+  const formatted = formatINR(amount);
+  return isStressful ? `⚠️ ${formatted}` : `✅ ${formatted}`;
+};
+
+// Calculate affordability score for Indian families
+export const calculateAffordabilityScore = (
+  monthlyIncome: number,
+  totalExpenses: number,
+  emergencyFund: number
+): { score: number; status: 'excellent' | 'good' | 'warning' | 'critical'; message: string } => {
+  const savingsRate = ((monthlyIncome - totalExpenses) / monthlyIncome) * 100;
+  const emergencyMonths = emergencyFund / totalExpenses;
+  
+  let score = 0;
+  score += Math.min(savingsRate * 2, 40); // Max 40 points for savings rate
+  score += Math.min(emergencyMonths * 10, 60); // Max 60 points for emergency fund
+  
+  if (score >= 80) {
+    return { score, status: 'excellent', message: 'आपकी वित्तीय स्थिति बहुत अच्छी है! (Your financial situation is excellent!)' };
+  } else if (score >= 60) {
+    return { score, status: 'good', message: 'अच्छी प्रगति! (Good progress!)' };
+  } else if (score >= 40) {
+    return { score, status: 'warning', message: 'सुधार की जरूरत है (Needs improvement)' };
+  } else {
+    return { score, status: 'critical', message: 'तुरंत ध्यान दें (Immediate attention needed)' };
+  }
+};
